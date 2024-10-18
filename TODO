@@ -1,0 +1,21 @@
+wykaz funkcjonalnosci:
+
+1. Przeliczanie walut (Wybranie waluty bazowej i docelowej, automatyczne
+pobranie aktualnych kursów walut z zewnętrznego API) 
+
+2. Szukanie waluty po nazwie lub kodzie waluty (np. USD)
+
+3. Aktualne kursy walut (Ekran wyświetlający aktualne kursy walut w stosunku do
+wybranej waluty bazowej, możliwość ręcznego odświeżania oraz automatyczne
+odświeżanie co 5 sekund) 
+
+4. Historia przeliczonych transakcji (przechowywanie
+ostatnich transakcji przeliczeniowych, możliwość usuwania)
+
+5. Kalkulator walutowy (możliwość prostych operacji np. mnożenie kwot)
+
+ekrany
+|
+|-> przeliczenie waluta -> inna waluta + historia (1, 4, 5)
+|
+|-> lista - wybrana waluta -> wszystkie inne dostepne waluty (2, 3)
