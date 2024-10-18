@@ -19,3 +19,10 @@ ekrany
 |-> przeliczenie waluta -> inna waluta + historia (1, 4, 5)
 |
 |-> lista - wybrana waluta -> wszystkie inne dostepne waluty (2, 3)
+
+potrzebne widzety/kod:
+1. gadanie z API
+2. widzet konwerter 1->1
+3. widzet konwerter 1->wiele (tu ewentualnie mini widzet na jedno entry tabeli)
+4. widzet historia
+5. widzet navbar
