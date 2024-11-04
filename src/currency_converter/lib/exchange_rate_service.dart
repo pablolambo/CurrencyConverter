@@ -10,13 +10,13 @@ class ExchangeRateService {
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final rates = data['rates'] as Map<String, dynamic>;
+        final rates = (data['rates'] as Map<String, dynamic>).map((key, value) => MapEntry(key, (value as num).toDouble()));
+        final timeLastUpdated = data['time_last_updated'] as int;
 
-         return Map.fromEntries(
-            rates.entries
-                .map((entry) => MapEntry(entry.key, entry.value.toDouble()))
-                .where((entry) => entry.key != baseCurrency)
-         );
+        return {
+          'rates': rates,
+          'time_last_updated': timeLastUpdated,
+        };
       } else {
         throw Exception('Failed to load exchange rates');
       }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'exchange_rate_service.dart';
+import 'package:intl/intl.dart';
 
 class Exchange extends StatefulWidget {
   const Exchange({super.key});
@@ -12,6 +13,7 @@ class _Exchange extends State<Exchange> {
   List<String> baseCurrencies = [];
   String selectedBaseCurrency = 'PLN';
   Map<String, double>? exchangeRates;
+  String? lastUpdatedTime;
 
   @override
   void initState() {
@@ -37,10 +39,15 @@ class _Exchange extends State<Exchange> {
 
   Future<void> fetchRates() async {
     var exchangeRateService = ExchangeRateService();
+
     try {
-      final rates = await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
+      final result = await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
+      final rates = result['rates'] as Map<String, double>;
+      final timeLastUpdated = result['time_last_updated'] as int;
+
       setState(() {
         exchangeRates = rates.cast<String, double>();
+        lastUpdatedTime = DateFormat.yMd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(timeLastUpdated * 1000));
       });
     } catch (e) {
       print('Error fetching rates: $e');
@@ -76,7 +83,12 @@ class _Exchange extends State<Exchange> {
             onPressed: () {
               fetchRates();
             },
-            tooltip: "Refresh Rates",
+            tooltip: "Odśwież kursy wymiany",
+          ),
+          if (lastUpdatedTime != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text("Ostatnio odświeżone: $lastUpdatedTime"),
           ),
           const SizedBox(height: 10),
           exchangeRates == null
