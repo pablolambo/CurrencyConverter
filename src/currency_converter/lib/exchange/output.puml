@@ -1,0 +1,63 @@
+@startuml
+class Calculator {
+---
+createState(): State<Calculator
+}
+StatefulWidget <|-- Calculator
+class _Calculator {
+---
+currencies: List<String>
+selectedBaseCurrency: String
+selectedTargetCurrency: String
+exchangeRates: Map<String, double>?
+result: double
+input: String
+txt: null
+calculateExchangeValue(): void
+initState(): void
+fetchRates(): void
+getExchangeRate(): double
+build(): Widget
+}
+State <|-- _Calculator
+class Exchange {
+---
+createState(): State<Exchange
+}
+StatefulWidget <|-- Exchange
+class _Exchange {
+---
+baseCurrencies: List<String>
+selectedBaseCurrency: String
+exchangeRates: Map<String, double>?
+lastUpdatedTime: String?
+initState(): void
+fetchCurrencyList(): void
+fetchRates(): void
+build(): Widget
+}
+State <|-- _Exchange
+class ExchangeRateService {
+---
+apiUrl: String
+fetchExchangeRates(): Map<String, dynamic
+fetchCurrencyNames(): String[0..*]
+}
+class MainApp {
+---
+build(): Widget
+}
+StatelessWidget <|-- MainApp
+class HomePage {
+---
+createState(): _HomePageState
+}
+StatefulWidget <|-- HomePage
+class _HomePageState {
+---
+screens: null
+-selectedIndex: int
+build(): Widget
+}
+State <|-- _HomePageState
+@enduml
