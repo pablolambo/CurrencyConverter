@@ -1,19 +1,64 @@
+import 'package:currency_converter/list.dart';
 import 'package:flutter/material.dart';
+import 'package:currency_converter/calc.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'waluter3000',
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final screens = [
+    Calculator(),
+    Exchange(),
+  ];
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('waluter3000'),
+        foregroundColor: Colors.white,
+        //backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: screens[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.calculate_sharp),
+            icon: Icon(Icons.calculate_sharp),
+            label: 'Kalkulator walutowy',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.list_alt_sharp),
+            label: 'Kursy walut',
+          ),
+        ],
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }
