@@ -9,15 +9,30 @@ class Exchange extends StatefulWidget {
 }
 
 class _Exchange extends State<Exchange> {
-  final List<String> currencies = ['PLN', 'GBP', 'EUR', 'USD'];
+  List<String> baseCurrencies = [];
   String selectedBaseCurrency = 'PLN';
-  String selectedTargetCurrency = 'USD';
   Map<String, double>? exchangeRates;
 
   @override
   void initState() {
     super.initState();
-    fetchRates(); 
+    fetchCurrencyList();
+  }
+
+  Future<void> fetchCurrencyList() async {
+    var exchangeRateService = ExchangeRateService();
+    try {
+      final currencies = await exchangeRateService.fetchCurrencyNames('PLN');
+      setState(() {
+        baseCurrencies = currencies;
+        if (!currencies.contains(selectedBaseCurrency)) {
+          selectedBaseCurrency = currencies.first;
+        }
+      });
+      fetchRates();
+    } catch (e) {
+      print('Error fetching currency list: $e');
+    }
   }
 
   Future<void> fetchRates() async {
@@ -32,65 +47,58 @@ class _Exchange extends State<Exchange> {
     }
   }
 
-  double getExchangeRate(String base, String target) {
-    if (exchangeRates == null || !exchangeRates!.containsKey(target)) {
-      throw Exception('Exchange rate not available');
-    }
-    double baseRate = exchangeRates![base] ?? 1.0;
-    double targetRate = exchangeRates![target]!;
-    return targetRate / baseRate;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Wybierz walutę bazową:"),
-        DropdownButton<String>(
-          value: selectedBaseCurrency,
-          items: currencies.map((String currency) {
-            return DropdownMenuItem<String>(
-              value: currency,
-              child: Text(currency),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedBaseCurrency = value!;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("Wybierz walute bazową:"),
+          DropdownButton<String>(
+            value: selectedBaseCurrency,
+            items: baseCurrencies.map((String currency) {
+              return DropdownMenuItem<String>(
+                value: currency,
+                child: Text(currency),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedBaseCurrency = value!;
+                fetchRates(); 
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          Text("Kursy wymiany dla $selectedBaseCurrency:"),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
               fetchRates();
-            });
-          },
-        ),
-        SizedBox(height: 20),
-        Text("Wybierz walutę docelową:"),
-        DropdownButton<String>(
-          value: selectedTargetCurrency,
-          items: currencies.map((String currency) {
-            return DropdownMenuItem<String>(
-              value: currency,
-              child: Text(currency),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedTargetCurrency = value!;
-            });
-          },
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            try {
-              double rate = getExchangeRate(selectedBaseCurrency, selectedTargetCurrency);
-              print('Kurs wymiany z $selectedBaseCurrency na $selectedTargetCurrency: $rate');
-            } catch (e) {
-              print(e);
-            }
-          },
-          child: Text("Uzyskaj kurs wymiany"),
-        ),
-      ],
+            },
+            tooltip: "Refresh Rates",
+          ),
+          const SizedBox(height: 10),
+          exchangeRates == null
+            ? const CircularProgressIndicator()
+            : Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: exchangeRates!.entries.map((entry) {
+                        return ListTile(
+                          title: Center(child: Text(entry.key)),
+                          subtitle: Center(
+                            child: Text("1 $selectedBaseCurrency = ${entry.value} ${entry.key}"),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+      ),
     );
   }
 }

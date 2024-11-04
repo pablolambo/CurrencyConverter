@@ -25,7 +25,7 @@ class ExchangeRateService {
     }
   }
 
-   Future<List<String>> fetchCurrencyNames(String baseCurrency) async {
+  Future<List<String>> fetchCurrencyNames(String baseCurrency) async {
     try {
       final response = await http.get(Uri.parse('$apiUrl$baseCurrency'));
       
