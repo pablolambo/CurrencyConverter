@@ -1,6 +1,6 @@
-import 'package:currency_converter/list.dart';
 import 'package:flutter/material.dart';
-import 'package:currency_converter/calc.dart';
+import 'package:currency_converter/exchange.dart';
+import 'package:currency_converter/calculator.dart';
 
 void main() {
   runApp(MainApp());
