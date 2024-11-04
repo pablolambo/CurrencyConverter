@@ -121,6 +121,7 @@ class _Calculator extends State<Calculator> {
           SizedBox(
             width:100 ,
             child: TextField(
+              readOnly: true,
               controller: txt,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
