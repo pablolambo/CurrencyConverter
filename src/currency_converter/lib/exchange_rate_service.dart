@@ -11,6 +11,7 @@ class ExchangeRateService {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final rates = (data['rates'] as Map<String, dynamic>).map((key, value) => MapEntry(key, (value as num).toDouble()));
+        rates.remove(baseCurrency);
         final timeLastUpdated = data['time_last_updated'] as int;
 
         return {

@@ -65,12 +65,12 @@ class _Calculator extends State<Calculator> {
     double? tmp = double.tryParse(input);
     if (tmp != null) {
       result = tmp * getExchangeRate(selectedBaseCurrency, selectedTargetCurrency);
+      txt.text = result.toStringAsFixed(2);
+      setState(() {
+        history.add("${input} ${selectedBaseCurrency} = ${txt.text} ${selectedTargetCurrency}");
+      });
     }
     print(result);
-    txt.text = result.toStringAsFixed(2);
-    setState(() {
-      history.add("${input} ${selectedBaseCurrency} = ${txt.text} ${selectedTargetCurrency}");
-    });
     print(history);
   }
 
@@ -83,7 +83,7 @@ class _Calculator extends State<Calculator> {
     return Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
         Column(children: [
-          Center(child: Text("waluta bazowa")),
+          Center(child: Text("Waluta bazowa")),
           SizedBox(
             width:100 ,
             child: TextField(
@@ -117,7 +117,7 @@ class _Calculator extends State<Calculator> {
         ]),
         Icon(Icons.arrow_forward_outlined),
         Column(children: [
-          Center(child: Text("waluta bazowa")),
+          Center(child: Text("Waluta docelowa")),
           SizedBox(
             width:100 ,
             child: TextField(
