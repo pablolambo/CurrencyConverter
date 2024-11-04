@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('waluter3000'),
+        title: const Text('Waluty'),
         foregroundColor: Colors.white,
         //backgroundColor: Theme.of(context).primaryColor,
         backgroundColor: Colors.deepPurple,
