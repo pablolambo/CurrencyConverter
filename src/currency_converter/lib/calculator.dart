@@ -13,7 +13,7 @@ class _Calculator extends State<Calculator> {
   String selectedBaseCurrency = 'PLN';
   String selectedTargetCurrency = 'USD';
   Map<String, double>? exchangeRates;
-  List<String> history = ["1 PLN = 10 USD"];
+  List<String> history = [""];
 
   @override
   void initState() {
@@ -39,8 +39,12 @@ class _Calculator extends State<Calculator> {
 
   Future<void> fetchRates() async {
     var exchangeRateService = ExchangeRateService();
+
     try {
-      final rates = await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
+      final result = await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
+      final rates = result['rates'] as Map<String, double>;
+      final timeLastUpdated = result['time_last_updated'] as int;
+
       setState(() {
         exchangeRates = rates.cast<String, double>();
       });
@@ -48,6 +52,8 @@ class _Calculator extends State<Calculator> {
       print('Error fetching rates: $e');
     }
   }
+
+
   /* to z api */
   double result = 10;
   String input = "";
@@ -60,18 +66,16 @@ class _Calculator extends State<Calculator> {
       result = tmp * getExchangeRate(selectedBaseCurrency, selectedTargetCurrency);
     }
     print(result);
-    history.add(result.toStringAsFixed(2));
     txt.text = result.toStringAsFixed(2);
+    setState(() {
+      history.add("${input} ${selectedBaseCurrency} = ${txt.text} ${selectedTargetCurrency}");
+    });
     print(history);
   }
 
   double getExchangeRate(String base, String target) {
-    if (exchangeRates == null || !exchangeRates!.containsKey(target)) {
-      throw Exception('Exchange rate not available');
-    }
-    double baseRate = exchangeRates![base] ?? 1.0;
-    double targetRate = exchangeRates![target]!;
-    return targetRate / baseRate;
+    fetchRates();
+    return exchangeRates![base]!;
   }
 
   @override
@@ -146,7 +150,6 @@ class _Calculator extends State<Calculator> {
             margin: EdgeInsets.all(10)),
         const SizedBox(height: 20,),
         Text("HISTORIA"),
-        const SizedBox(height: 20,),
         Expanded(
             child: ListView.builder(
     padding: const EdgeInsets.all(8),
@@ -154,7 +157,7 @@ class _Calculator extends State<Calculator> {
     itemBuilder: (BuildContext context, int index) {
       return Container(
         height: 50,
-        child: Center(child: Text('Entry ${history[index]}')),
+        child: Center(child: Text('${history[index]}')),
       );
     }
   ))
