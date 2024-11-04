@@ -9,11 +9,46 @@ class Calculator extends StatefulWidget {
 }
 
 class _Calculator extends State<Calculator> {
-  /* to z api */
-  final List<String> currencies = ['PLN', 'GBP', 'EUR', 'USD'];
+  List<String> baseCurrencies = [];
   String selectedBaseCurrency = 'PLN';
   String selectedTargetCurrency = 'USD';
   Map<String, double>? exchangeRates;
+  List<String> history = ["1 PLN = 10 USD"];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCurrencyList();
+  }
+
+  Future<void> fetchCurrencyList() async {
+    var exchangeRateService = ExchangeRateService();
+    try {
+      final currencies = await exchangeRateService.fetchCurrencyNames('PLN');
+      setState(() {
+        baseCurrencies = currencies;
+        if (!currencies.contains(selectedBaseCurrency)) {
+          selectedBaseCurrency = currencies.first;
+        }
+      });
+      fetchRates();
+    } catch (e) {
+      print('Error fetching currency list: $e');
+    }
+  }
+
+  Future<void> fetchRates() async {
+    var exchangeRateService = ExchangeRateService();
+    try {
+      final rates = await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
+      setState(() {
+        exchangeRates = rates.cast<String, double>();
+      });
+    } catch (e) {
+      print('Error fetching rates: $e');
+    }
+  }
+  /* to z api */
   double result = 10;
   String input = "";
 
@@ -25,26 +60,9 @@ class _Calculator extends State<Calculator> {
       result = tmp * getExchangeRate(selectedBaseCurrency, selectedTargetCurrency);
     }
     print(result);
-    txt.text = result.toString();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchRates();
-  }
-
-  Future<void> fetchRates() async {
-    var exchangeRateService = ExchangeRateService();
-    try {
-      final rates =
-          await exchangeRateService.fetchExchangeRates(selectedBaseCurrency);
-      setState(() {
-        exchangeRates = rates.cast<String, double>();
-      });
-    } catch (e) {
-      print('Error fetching rates: $e');
-    }
+    history.add(result.toStringAsFixed(2));
+    txt.text = result.toStringAsFixed(2);
+    print(history);
   }
 
   double getExchangeRate(String base, String target) {
@@ -79,7 +97,7 @@ class _Calculator extends State<Calculator> {
           ),
           DropdownButton<String>(
             value: selectedBaseCurrency,
-            items: currencies.map((String currency) {
+            items: baseCurrencies.map((String currency) {
               return DropdownMenuItem<String>(
                 value: currency,
                 child: Text(currency),
@@ -108,7 +126,7 @@ class _Calculator extends State<Calculator> {
           ),
           DropdownButton<String>(
             value: selectedTargetCurrency,
-            items: currencies.map((String currency) {
+            items: baseCurrencies.map((String currency) {
               return DropdownMenuItem<String>(
                 value: currency,
                 child: Text(currency),
@@ -120,12 +138,27 @@ class _Calculator extends State<Calculator> {
               });
             },
           ),
+          ]),
         ]),
-      ]),
-      Container(
-          child: ElevatedButton(
-              onPressed: calculateExchangeValue, child: const Text("Oblicz")),
-          margin: EdgeInsets.all(10)),
-    ]);
+        Container(
+            child: ElevatedButton(
+                onPressed: calculateExchangeValue, child: const Text("Oblicz")),
+            margin: EdgeInsets.all(10)),
+        const SizedBox(height: 20,),
+        Text("HISTORIA"),
+        const SizedBox(height: 20,),
+        Expanded(
+            child: ListView.builder(
+    padding: const EdgeInsets.all(8),
+    itemCount: history.length,
+    itemBuilder: (BuildContext context, int index) {
+      return Container(
+        height: 50,
+        child: Center(child: Text('Entry ${history[index]}')),
+      );
+    }
+  ))
+      ],
+    );
   }
 }
