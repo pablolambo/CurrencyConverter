@@ -61,6 +61,7 @@ class _Calculator extends State<Calculator> {
   var txt = TextEditingController();
 
   void calculateExchangeValue() {
+    fetchRates();
     double? tmp = double.tryParse(input);
     if (tmp != null) {
       result = tmp * getExchangeRate(selectedBaseCurrency, selectedTargetCurrency);
@@ -74,8 +75,7 @@ class _Calculator extends State<Calculator> {
   }
 
   double getExchangeRate(String base, String target) {
-    fetchRates();
-    return exchangeRates![base]!;
+    return exchangeRates![target]!;
   }
 
   @override
